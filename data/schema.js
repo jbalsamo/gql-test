@@ -2,7 +2,7 @@ import {MongoClient, ObjectId} from 'mongodb';
 import { makeExecutableSchema, addMockFunctionsToSchema } from 'graphql-tools';
 import mocks from './mocks';
 
-const MONGO_URL = 'mongodb://localhost:27017/quip'
+const MONGO_URL = 'mongodb://localhost:27017/quip';
 
 const typeDefs = `
 type Coordinate {
