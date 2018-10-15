@@ -1,10 +1,17 @@
 import {MongoClient, ObjectId} from 'mongodb';
 import { makeExecutableSchema, addMockFunctionsToSchema } from 'graphql-tools';
-import mocks from './mocks';
+import {prepare} from '../util';
 
-const MONGO_URL = 'mongodb://localhost:27017/quip';
+const MONGO_URL = 'mongodb://nexi-bmi.uhmc.sunysb.edu:27017/quip';
+const db = MongoClient.connect(MONGO_URL);
+const Objects = db.objects;
 
-const typeDefs = `
+const typeDefs = [`
+type Query {
+  objectsByExecID(execution_id: String): [Object]
+  allObjects: [Object]
+}
+
 type Coordinate {
   xyarr: [Float]
 }
@@ -70,13 +77,22 @@ type Object {
   submit_date: String
 }
 
-type Query {
-  
+schema {
+  query: Query
 }
-`;
+`];
 
-const schema = makeExecutableSchema({ typeDefs });
+const resolvers = {
+  Query: {
+    objectsByExecID: async (execution_id) => {
+      return prepare(await Objects.find({ 'provenance.analysis.execution_id' : execution_id }));
+    },
+    allObjects: async () => {
+      return (await Objects.find({}).toArray()).map(prepare);
+    }
+  },
+}
 
-addMockFunctionsToSchema({ schema, mocks });
+const schema = makeExecutableSchema({ typeDefs, resolvers });
 
 export default schema;

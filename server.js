@@ -3,6 +3,7 @@ import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
 import bodyParser from 'body-parser';
 import schema from './data/schema';
 import cors from 'cors';
+import {prepare} from "./util";
 
 const GRAPHQL_PORT = 3000;
 
